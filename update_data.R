@@ -13,7 +13,7 @@ Kreuzlingen, Löwenstrasse","Kreuzlingen, Marktweg","Kreuzlingen, Romanshornerst
 messstandorte <- get_messstandorte()
 
 # Messstandorte filtern
-messtandorte_tg <-  messtandorte %>% 
+messtandorte_tg <-  messstandorte %>% 
   filter(nameLang %in% messstationen_tg)
 
 
