@@ -179,7 +179,7 @@ get_ostluft_data <- function(messstationId,messgroesseId,zeitfensterId, days_fro
 }
 
 
-prepare_as_tidy_data <- function(data,element_name){
+prepare_as_tidy_data <- function(data,element_name,messstandorte){
   if (!is.data.frame(data)){
     return(NULL)
   }

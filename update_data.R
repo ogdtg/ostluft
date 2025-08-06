@@ -40,17 +40,17 @@ ostluft_data_full <- list()
 # Daten beziehen (immer 10 Tage rückwirkend)
 for (i in 1:nrow(av_time)){
   ostluft_data_full[[av_time$name[i]]] <- list()
-  print(av_time$name[i])
+  # print(av_time$name[i])
   for (mg in av_messgroessen){
     mg_name <- messgroessen_av$messgroesse$name[which(mg == messgroessen_av$messgroesse$messgroesseId)]
-    print(mg_name)
+    # print(mg_name)
     
     ostluft_data_full[[av_time$name[[i]]]][[mg_name]] <- tryCatch({
       df <- get_ostluft_data(messstationId = stationen_tg,messgroesseId = mg,zeitfensterId = av_time$zeitfensterId[i],days_from_today = 10)
       df[, colSums(!is.na(df)) > 0]
       
     },error = function(cond){
-      print(cond)
+      # print(cond)
       
       NULL
       
@@ -72,7 +72,7 @@ for (df_name in names(ostluft_data_full)){
     
     df_list <- ostluft_data_full[[df_name]]
     df <-  lapply(seq_along(df_list), function(i){
-      prepare_as_tidy_data(df_list[[i]],names(df_list)[i])
+      prepare_as_tidy_data(df_list[[i]],names(df_list)[i],messstandorte)
       
     }) %>% bind_rows()
     
