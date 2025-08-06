@@ -10,7 +10,7 @@ Kreuzlingen, Löwenstrasse","Kreuzlingen, Marktweg","Kreuzlingen, Romanshornerst
 
 
 # Liste der Messstationen beziehen
-messtandorte <- get_messstandorte()
+messstandorte <- get_messstandorte()
 
 # Messstandorte filtern
 messtandorte_tg <-  messtandorte %>% 
@@ -38,6 +38,7 @@ ostluft_data_full <- list()
 
 
 # Daten beziehen (immer 10 Tage rückwirkend)
+# for (i in 1){
 for (i in 1:nrow(av_time)){
   ostluft_data_full[[av_time$name[i]]] <- list()
   # print(av_time$name[i])
