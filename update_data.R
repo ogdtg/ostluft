@@ -1,6 +1,7 @@
 # Update data 
-source("ostluft_functions.R")
+install.packages("RCurl")
 
+source("ostluft_functions.R")
 
 
 # Thurgauer Messstandorte definieren
@@ -86,8 +87,24 @@ for (df_name in names(ostluft_data_full)){
         distinct()
       
       saveRDS(combined_data,paste0("data/",temp_name,".rds"))
-      write.table(combined_data, file = ,paste0("csv/",temp_name,".csv"), quote = T, sep = ",", dec = ".", 
-                  row.names = F, na = "",fileEncoding = "utf-8")
+      
+      
+      if (temp_name %in% c("gleitender_jahresmittelwert","monatswert")){
+        write.table(combined_data, file = paste0("current_data/",temp_name,"_current.csv"), quote = T, sep = ",", dec = ".",
+                    row.names = F, na = "",fileEncoding = "utf-8")
+      } else {
+        save_data_by_year(combined_data, temp_name, output_dir = "csv_gz")
+        save_last_365_days(combined_data, temp_name, output_dir = "current_data")
+      }
+      
+      RCurl::ftpUpload(paste0("current_data/",temp_name,"_current.csv"),
+                       paste0("ftp://potyhaqi.cyon.site/ostluft/",temp_name,"_current.csv"),
+                       userpwd = paste0("OGDTG@potyhaqi.cyon.site:",Sys.getenv("OGDTG_USERPWD"))
+                       
+      )
+      
+      # write.table(combined_data, file = ,paste0("csv/",temp_name,".csv"), quote = T, sep = ",", dec = ".", 
+      #             row.names = F, na = "",fileEncoding = "utf-8")
 
     }
   }

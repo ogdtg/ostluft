@@ -205,3 +205,57 @@ clean_string <- function(text) {
     str_replace_all("[^a-zA-Z0-9_]", "") %>%       # Remove all except letters, numbers, and underscore
     str_to_lower()                                 # Convert to lowercase
 }
+
+
+save_data_by_year <- function(data,data_name, datetime_col = "startzeit", output_dir = ".",upload = TRUE,max_year = NULL) {
+  # Ensure datetime column is in POSIXct format
+  data <- data %>%
+    mutate(year = year(.data[[datetime_col]]))
+  
+  if (!is.null(max_year)){
+    data <- data %>% 
+      filter(year>=max_year)
+  }
+  
+  # Create output directory if it doesn't exist
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
+  }
+  
+  # Split by year and write each to CSV.GZ
+  data %>%
+    group_split(year) %>%
+    purrr::walk(~ {
+      yr <- unique(.x$year)
+      filename <- file.path(output_dir, paste0(data_name,"_", yr, ".csv.gz"))
+      
+      write_csv(.x %>% select(-year), filename)
+      if (upload){
+        RCurl::ftpUpload(filename,
+                         paste0("ftp://potyhaqi.cyon.site/ostluft/",data_name,"_", yr, ".csv.gz"),
+                         userpwd = paste0("OGDTG@potyhaqi.cyon.site:",Sys.getenv("OGDTG_USERPWD"))
+                         
+        )
+      }
+    })
+  
+  
+}
+
+
+save_last_365_days <- function(data, data_name, datetime_col = "startzeit", output_dir = ".") {
+  # Ensure datetime column is in POSIXct format
+  data <- data %>%
+    mutate(.datetime = as.POSIXct(.data[[datetime_col]])) %>%
+    filter(.datetime >= Sys.Date() - 365)
+  
+  # Create output directory if it doesn't exist
+  if (!dir.exists(output_dir)) {
+    dir.create(output_dir, recursive = TRUE)
+  }
+  
+  # Construct file path and save CSV
+  filename <- file.path(output_dir, paste0(data_name, "_current.csv"))
+  write.table(data %>% select(-.datetime), file = filename, quote = T, sep = ",", dec = ".", 
+              row.names = F, na = "",fileEncoding = "utf-8")
+}
