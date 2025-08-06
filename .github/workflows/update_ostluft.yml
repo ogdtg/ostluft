@@ -1,0 +1,34 @@
+name: Update Ostluft Data Daily
+
+on:
+  schedule:
+    - cron: '0 5 * * *'  # Every day at 05:00 UTC
+  workflow_dispatch:
+
+jobs:
+  update-data:
+    runs-on: ubuntu-latest
+    env: 
+      CI_COMMIT_MESSAGE: GH Actions: Daily Data Update
+      CI_COMMIT_AUTHOR: Continuous Integration
+    container:
+      image: rocker/tidyverse:4.4.3
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+      with: 
+        token: ${{ secrets.PAT }}
+
+    - name: Run the data update script
+      run: Rscript update_data.R
+        
+        
+    - name: GIT Commit Build Artifacts
+      # Only run on main branch push (e.g. after pull request merge).
+      run: |
+        git config --global --add safe.directory /__w/ostluft/ostluft
+        git config --global user.name "${{ env.CI_COMMIT_AUTHOR }}"
+        git config --global user.email "username@users.noreply.github.com"
+        git commit -a -m "${{ env.CI_COMMIT_MESSAGE }}"
+        git push

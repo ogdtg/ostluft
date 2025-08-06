@@ -85,6 +85,9 @@ for (df_name in names(ostluft_data_full)){
         distinct()
       
       saveRDS(combined_data,paste0("data/",temp_name,".rds"))
+      write.table(combined_data, file = ,paste0("csv/",temp_name,".csv"), quote = T, sep = ",", dec = ".", 
+                  row.names = F, na = "",fileEncoding = "utf-8")
+
     }
   }
 }
