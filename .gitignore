@@ -50,4 +50,5 @@ rsconnect/
 csv/
 test.R
 
-
+*.csv
+*.csv.gz
