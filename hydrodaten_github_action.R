@@ -151,6 +151,18 @@ lapply(names(current_data),function(x){
 
 # Messstaionen
 messstationen <- data %>% select(-c(gml_id:prid,csv_gesamt))
+
+messstationen$msGeometry %>% st_transform( 4326)
+
+messstationen <- messstationen %>%
+  mutate(
+    geom_wgs84 = st_transform(msGeometry, 4326),                 # transform to WGS84
+    coords = st_coordinates(geom_wgs84),                         # extract coords as matrix
+    lon = coords[, 1],                                           # first col = X = lon
+    lat = coords[, 2]                                            # second col = Y = lat
+  ) %>%
+  select(-coords,geom_wgs84,msGeometry)  # optional, remove helper column
+
 write.table(messstationen, file = paste0("data_hydro/messstationen.csv"), quote = T, sep = ",", dec = ".",
             row.names = F, na = "",fileEncoding = "utf-8")
 RCurl::ftpUpload( "data_hydro/messstationen.csv",
