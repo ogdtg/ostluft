@@ -2,7 +2,7 @@ name: Update Ostluft Data Daily
 
 on:
   schedule:
-    - cron: '0 5 * * *'  # Every day at 05:00 UTC
+    - cron: '0 5 */2 * *'  # Every 2 days at 05:00 UTC
   workflow_dispatch:
 
 jobs:
