@@ -152,7 +152,10 @@ lapply(names(current_data),function(x){
 # Messstaionen
 messstationen <- data %>% select(-c(gml_id:prid,csv_gesamt))
 
-messstationen$msGeometry %>% st_transform( 4326)
+# Der WFS liefert neuerdings kein CRS mehr mit -> LV95 (EPSG:2056) setzen
+if (is.na(st_crs(messstationen$msGeometry))) {
+  st_crs(messstationen$msGeometry) <- 2056
+}
 
 messstationen <- messstationen %>%
   mutate(
